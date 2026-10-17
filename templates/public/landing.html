@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Huduma Requests | Report a public service issue{% endblock %}
+{% block content %}
+<section class="hero card p-4 p-md-5 mb-5">
+  <div class="row align-items-center"><div class="col-lg-8">
+    <p class="text-uppercase fw-semibold text-success small">Public service portal</p>
+    <h1 class="display-6 fw-bold">Report a public service issue. Track it until it is fixed.</h1>
+    <p class="lead text-secondary">Send a request for a broken streetlight, water issue, garbage collection and more.</p>
+    <a class="btn btn-success me-2" href="{% url 'register' %}">Get Started</a><a class="btn btn-outline-success" href="{% url 'track' %}">Track a Request</a>
+  </div></div>
+</section>
+<section class="row g-3 mb-5"><div class="col-md-4"><div class="card h-100 p-3"><span class="fs-3 text-success">1</span><h2 class="h5">Register</h2><p class="mb-0 text-secondary">Create a secure citizen account.</p></div></div><div class="col-md-4"><div class="card h-100 p-3"><span class="fs-3 text-success">2</span><h2 class="h5">Report an issue</h2><p class="mb-0 text-secondary">Tell us what needs attention and where.</p></div></div><div class="col-md-4"><div class="card h-100 p-3"><span class="fs-3 text-success">3</span><h2 class="h5">Track progress</h2><p class="mb-0 text-secondary">Follow your request until it is resolved.</p></div></div></section>
+<section class="card p-4 mb-5"><h2 class="h4">Quick track</h2><form action="{% url 'track' %}" method="get" class="row g-2"><div class="col-md-8"><label class="visually-hidden" for="reference">Reference number</label><input id="reference" class="form-control" name="ref" placeholder="e.g. SR-2026-0001"></div><div class="col-md-auto"><button class="btn btn-success">Track request</button></div></form></section>
+<section><h2 class="h3 mb-3">What can we help with?</h2><div class="row g-3">{% for category in categories %}<div class="col-sm-6 col-lg-4"><div class="card p-3 h-100"><i class="bi {{ category.icon }} fs-3 text-success"></i><h3 class="h5 mt-2 mb-0">{{ category.name }}</h3></div></div>{% empty %}<p class="text-secondary">Service categories will be available shortly.</p>{% endfor %}</div></section>
+{% endblock %}

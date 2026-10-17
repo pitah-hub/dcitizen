@@ -1,0 +1,6 @@
+:root { --portal-green: #0b5d3b; --portal-bg: #f4f6f5; }
+body { background: var(--portal-bg); color: #24322c; }
+.portal-nav { background: var(--portal-green); }
+.card { border: 0; border-radius: .75rem; box-shadow: 0 .125rem .5rem rgb(0 0 0 / 8%); }
+.timeline-item { border-left: 3px solid var(--portal-green); margin-left: .5rem; padding: 0 0 1rem 1rem; }
+@media (max-width: 575.98px) { .container { padding-left: 1rem; padding-right: 1rem; } }
