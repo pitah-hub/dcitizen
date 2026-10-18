@@ -1,0 +1,442 @@
+/*
+  modern.css: visual layer on top of Bootstrap 5.3.
+  Load it AFTER site.css. It styles standard Bootstrap classes (navbar, card,
+  btn, badge, table, form-control, alert, pagination), so existing templates
+  pick it up without markup changes. All motion is switched off for visitors
+  who ask their system for reduced motion.
+*/
+
+:root {
+  --accent: #0b7a4b;
+  --accent-2: #14a56a;
+  --accent-dark: #075c39;
+  --accent-soft: rgba(11, 122, 75, 0.1);
+  --ink: #0f172a;
+  --muted: #64748b;
+  --surface: rgba(255, 255, 255, 0.82);
+  --radius: 18px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 2px 4px rgba(15, 23, 42, 0.06), 0 12px 28px rgba(15, 23, 42, 0.1);
+  --shadow-lg: 0 4px 8px rgba(15, 23, 42, 0.08), 0 24px 48px rgba(15, 23, 42, 0.16);
+
+  /* Re-point Bootstrap's own variables so utilities (.text-primary etc.) match */
+  --bs-primary: #0b7a4b;
+  --bs-primary-rgb: 11, 122, 75;
+  --bs-success: #0b7a4b;
+  --bs-success-rgb: 11, 122, 75;
+  --bs-link-color: #0b7a4b;
+  --bs-link-color-rgb: 11, 122, 75;
+  --bs-link-hover-color: #075c39;
+  --bs-link-hover-color-rgb: 7, 92, 57;
+  --bs-body-color: #0f172a;
+  --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* ---------- Page background: soft drifting colour orbs ---------- */
+
+html { background: #f3f7f5; }
+
+body,
+body.bg-light {
+  background: transparent !important;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  animation: page-in 0.45s ease both;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+body::before {
+  width: 520px;
+  height: 520px;
+  top: -140px;
+  left: -120px;
+  background: radial-gradient(circle at 30% 30%, #7be0b0, transparent 70%);
+  animation: drift-a 22s ease-in-out infinite alternate;
+}
+
+body::after {
+  width: 620px;
+  height: 620px;
+  bottom: -200px;
+  right: -160px;
+  background: radial-gradient(circle at 60% 40%, #8ec5ff, transparent 70%);
+  animation: drift-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes drift-a { to { transform: translate3d(90px, 70px, 0) scale(1.12); } }
+@keyframes drift-b { to { transform: translate3d(-80px, -60px, 0) scale(1.1); } }
+
+/* ---------- Typography ---------- */
+
+h1, h2, h3, h4, .display-4, .display-5, .display-6 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent), #2563eb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-muted, .text-secondary { color: var(--muted) !important; }
+
+/* ---------- Navbar: sticky glass bar ---------- */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  backdrop-filter: saturate(160%) blur(14px);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.3s ease;
+}
+
+.navbar.is-scrolled { box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12); }
+
+.navbar.bg-white,
+.navbar.bg-light { background: rgba(255, 255, 255, 0.78) !important; }
+
+.navbar.bg-success,
+.navbar.bg-primary,
+.navbar.bg-dark {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+}
+
+.navbar-brand { font-weight: 800; letter-spacing: -0.02em; }
+
+.navbar .nav-link { position: relative; font-weight: 500; }
+
+.navbar .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.2rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+.navbar .nav-link:hover::after,
+.navbar .nav-link.active::after { transform: scaleX(1); }
+
+/* ---------- Cards: glass surface, lift on hover ---------- */
+
+.card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius);
+  background: var(--surface);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover { box-shadow: var(--shadow-md); }
+
+.card-header,
+.card-footer {
+  background: transparent;
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+.card-header { font-weight: 700; }
+
+a.card { color: inherit; text-decoration: none; }
+
+/* Icons inside cards get a soft gradient tile */
+.card .bi.fs-1,
+.card .bi.fs-2,
+.card .bi.display-4,
+.card .bi.display-5,
+.card .bi.display-6 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 16px;
+  font-size: 1.7rem !important;
+  color: var(--accent);
+  background: linear-gradient(145deg, #fff, var(--accent-soft));
+  box-shadow: 0 6px 14px rgba(11, 122, 75, 0.18), inset 0 1px 0 #fff;
+}
+
+/* Tilt cards (class added by modern.js): solid surface so 3D works */
+.is-tilt {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background: #fff;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.is-tilt.is-hovering {
+  box-shadow: var(--shadow-lg);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px) scale(1.015);
+}
+
+.is-tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.28), transparent 45%);
+  transition: opacity 0.25s ease;
+}
+
+.is-tilt.is-hovering::after { opacity: 1; }
+
+/* ---------- Buttons: chunky 3D press ---------- */
+
+.btn {
+  position: relative;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.6rem 1.15rem;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-sm { padding: 0.4rem 0.85rem; border-radius: 10px; }
+
+.btn-primary,
+.btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-bg: var(--accent);
+  --bs-btn-hover-bg: var(--accent);
+  --bs-btn-active-bg: var(--accent);
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-border-color: transparent;
+  background-image: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 0 var(--accent-dark), 0 10px 20px rgba(11, 122, 75, 0.28);
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 0 var(--accent-dark), 0 16px 26px rgba(11, 122, 75, 0.32);
+}
+
+.btn-primary:active,
+.btn-success:active {
+  transform: translateY(3px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 0 var(--accent-dark), 0 4px 8px rgba(11, 122, 75, 0.25);
+}
+
+.btn-sm.btn-primary,
+.btn-sm.btn-success { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 0 var(--accent-dark), 0 8px 14px rgba(11, 122, 75, 0.25); }
+
+.btn-outline-primary,
+.btn-outline-success {
+  --bs-btn-color: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-bg: var(--accent);
+  --bs-btn-hover-border-color: var(--accent);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--accent-dark);
+  --bs-btn-active-border-color: var(--accent-dark);
+  border-width: 2px;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-success:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(11, 122, 75, 0.2); }
+
+/* Submit spinner (class added by modern.js) */
+.btn.is-loading { color: transparent !important; pointer-events: none; }
+
+.btn.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 1.1em;
+  height: 1.1em;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Forms ---------- */
+
+.form-label { font-weight: 600; font-size: 0.9rem; }
+
+.form-control,
+.form-select {
+  border: 1.5px solid #dbe4df;
+  border-radius: 12px;
+  padding: 0.7rem 0.95rem;
+  background-color: rgba(255, 255, 255, 0.92);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft), 0 8px 20px rgba(11, 122, 75, 0.08);
+  transform: translateY(-1px);
+}
+
+.form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+
+.input-group > .form-control,
+.input-group > .btn { transform: none; }
+
+.invalid-feedback,
+.errorlist { font-size: 0.85rem; }
+
+/* ---------- Tables ---------- */
+
+.table-responsive {
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.table { --bs-table-bg: transparent; margin-bottom: 0; }
+
+.table > thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(15, 23, 42, 0.025);
+  border-bottom: 2px solid rgba(15, 23, 42, 0.06);
+}
+
+.table td,
+.table th { padding: 0.9rem 1rem; vertical-align: middle; }
+
+.table > tbody > tr { transition: background 0.2s ease; }
+.table > tbody > tr:hover { background: var(--accent-soft); }
+
+/* ---------- Status badges: pill with live dot ---------- */
+
+.badge {
+  border-radius: 999px;
+  padding: 0.5em 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.badge::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.5em;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+/* Pending pulses so unresolved items draw the eye */
+.badge.bg-warning::before,
+.badge.text-bg-warning::before { animation: pulse-dot 1.8s ease-out infinite; }
+
+@keyframes pulse-dot {
+  0% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.35); }
+  100% { box-shadow: 0 0 0 0.55em rgba(0, 0, 0, 0); }
+}
+
+/* ---------- Alerts, pagination, lists ---------- */
+
+.alert {
+  border: 0;
+  border-left: 5px solid var(--bs-alert-border-color);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  animation: slide-in 0.4s ease both;
+}
+
+@keyframes slide-in { from { opacity: 0; translate: 0 -10px; } to { opacity: 1; translate: 0 0; } }
+
+.page-link {
+  margin: 0 0.15rem;
+  border: 0;
+  border-radius: 10px !important;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.page-item.active .page-link {
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 6px 14px rgba(11, 122, 75, 0.3);
+}
+
+.list-group-item { border-color: rgba(15, 23, 42, 0.06); background: transparent; }
+
+/* ---------- Optional hooks (add the class in a template to use) ---------- */
+
+.hero {
+  position: relative;
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(1.25rem, 4vw, 3rem);
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55));
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--shadow-md);
+}
+
+.float-slow { animation: float 6s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-12px) rotate(2deg); } }
+
+.stat-number { font-variant-numeric: tabular-nums; }
+
+/* ---------- Scroll reveal (class added by modern.js) ---------- */
+
+.reveal {
+  opacity: 0;
+  translate: 0 24px;
+  transition: opacity 0.6s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--d, 0ms);
+}
+
+.reveal.is-visible { opacity: 1; translate: 0 0; }
+
+/* ---------- Small screens and reduced motion ---------- */
+
+@media (max-width: 576px) {
+  body::before, body::after { filter: blur(50px); opacity: 0.4; }
+  .btn { padding: 0.6rem 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; translate: none; }
+}

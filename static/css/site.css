@@ -1,6 +1,64 @@
-:root { --portal-green: #0b5d3b; --portal-bg: #f4f6f5; }
+:root {
+  --portal-green: #0b5d3b;
+  --portal-green-light: #14a56a;
+  --portal-bg: #f4f6f5;
+}
+
 body { background: var(--portal-bg); color: #24322c; }
-.portal-nav { background: var(--portal-green); }
+
+.portal-nav {
+  background: linear-gradient(135deg, var(--portal-green), var(--portal-green-light));
+  /* Bootstrap's dark navbar dims links to 55% white, which is hard to read on green. */
+  --bs-navbar-color: rgb(255 255 255 / 90%);
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+}
+
 .card { border: 0; border-radius: .75rem; box-shadow: 0 .125rem .5rem rgb(0 0 0 / 8%); }
-.timeline-item { border-left: 3px solid var(--portal-green); margin-left: .5rem; padding: 0 0 1rem 1rem; }
+
+/* Status timeline: one dot per step, joined by a line, latest step highlighted. */
+.timeline-item {
+  position: relative;
+  margin-left: .5rem;
+  padding: 0 0 1.25rem 1.5rem;
+}
+
+/* The dot sits centred on the line's x position. */
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: .3rem;
+  left: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--portal-green);
+  box-shadow: 0 0 0 4px rgb(11 93 59 / 15%);
+}
+
+/* The line runs from this dot down to the next step's dot. */
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  top: .675rem;
+  bottom: -.675rem;
+  left: -1.5px;
+  width: 3px;
+  background: rgb(11 93 59 / 25%);
+}
+
+/* Latest step (no later step after it): no line below, bigger glowing dot. */
+.timeline-item:not(:has(~ .timeline-item)) { padding-bottom: 0; }
+.timeline-item:not(:has(~ .timeline-item))::after { display: none; }
+
+.timeline-item:not(:has(~ .timeline-item))::before {
+  top: .2rem;
+  left: -7.5px;
+  width: 15px;
+  height: 15px;
+  background: var(--portal-green-light);
+  box-shadow: 0 0 0 5px rgb(20 165 106 / 25%);
+}
+
 @media (max-width: 575.98px) { .container { padding-left: 1rem; padding-right: 1rem; } }

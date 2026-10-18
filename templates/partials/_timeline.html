@@ -1,8 +1,12 @@
-<ol class="timeline list-unstyled">
+<ol class="timeline list-unstyled mb-0">
   {% for update in history %}
-    <li class="timeline-item"><strong>{{ update.get_new_status_display }}</strong><br><small class="text-secondary">{{ update.created_at }}</small>
-      {% if show_notes and update.note %}<p class="mb-0">{{ update.note }}</p>{% endif %}
-      {% if show_actor and update.changed_by %}<small>{{ update.changed_by.get_full_name }}</small>{% endif %}
+    <li class="timeline-item">
+      <strong>{{ update.get_new_status_display }}</strong><br>
+      <small class="text-secondary">{{ update.created_at|date:"d M Y, H:i" }}</small>
+      {% if show_notes and update.note %}<p class="mb-0 mt-1">{{ update.note }}</p>{% endif %}
+      {% if show_actor and update.changed_by %}<div class="small text-secondary">Updated by {{ update.changed_by.get_full_name }}</div>{% endif %}
     </li>
-  {% empty %}<li class="text-secondary">No status updates yet.</li>{% endfor %}
+  {% empty %}
+    <li class="text-secondary">No status updates yet.</li>
+  {% endfor %}
 </ol>
