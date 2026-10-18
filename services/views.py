@@ -1,8 +1,6 @@
 """Citizen service-request views."""
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
-from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils.http import urlencode
 
@@ -10,8 +8,7 @@ from .analytics import citizen_stats
 from .forms import ReportForm
 from .models import ServiceRequest, Status
 from .notifications import send_submission_email
-from .permissions import citizen_required
-from .permissions import get_owned_request
+from .permissions import citizen_required, get_owned_request
 
 
 @citizen_required
@@ -49,14 +46,14 @@ def request_create(request):
 def request_list(request):
     """List only the signed-in citizen's requests, newest first."""
     selected_status = request.GET.get("status", "")
-    requests = ServiceRequest.objects.for_user(request.user).select_related(
+    queryset = ServiceRequest.objects.for_user(request.user).select_related(
         "category", "county"
     )
     if selected_status in Status.values:
-        requests = requests.filter(status=selected_status)
+        queryset = queryset.filter(status=selected_status)
     query_params = request.GET.copy()
     query_params.pop("page", None)
-    page_obj = Paginator(requests, 10).get_page(request.GET.get("page"))
+    page_obj = Paginator(queryset, 10).get_page(request.GET.get("page"))
     return render(
         request,
         "services/request_list.html",
@@ -72,12 +69,8 @@ def request_list(request):
 @citizen_required
 def request_detail(request, pk):
     """Show one request owned by the signed-in citizen and its timeline."""
-    try:
-        service_request = get_owned_request(request.user, pk)
-    except Http404:
-        if ServiceRequest.objects.filter(pk=pk).exists():
-            raise PermissionDenied
-        raise
+    # 404, not 403, for a foreign request: never reveal that the id exists.
+    service_request = get_owned_request(request.user, pk)
     history = service_request.history.select_related("changed_by").all()
     return render(
         request,

@@ -4,13 +4,18 @@ from django.contrib.auth import login
 from django.shortcuts import redirect, render
 
 from services.models import Category, ServiceRequest
+from services.permissions import citizen_required
 
 from .forms import ProfileForm, RegistrationForm
 
 
 def landing(request):
     """Show the public landing page and active service categories."""
-    return render(request, "public/landing.html", {"categories": Category.objects.filter(is_active=True)})
+    return render(
+        request,
+        "public/landing.html",
+        {"categories": Category.objects.filter(is_active=True)},
+    )
 
 
 def about(request):
@@ -29,12 +34,20 @@ def track(request):
     service_request = None
     not_found = False
     if reference:
-        service_request = ServiceRequest.objects.select_related("category", "county").filter(reference=reference).first()
+        service_request = (
+            ServiceRequest.objects.select_related("category", "county")
+            .filter(reference=reference)
+            .first()
+        )
         not_found = service_request is None
     return render(
         request,
         "public/track.html",
-        {"reference": reference, "service_request": service_request, "not_found": not_found},
+        {
+            "reference": reference,
+            "service_request": service_request,
+            "not_found": not_found,
+        },
     )
 
 
@@ -46,11 +59,14 @@ def register(request):
     if request.method == "POST" and form.is_valid():
         user = form.save()
         login(request, user)
-        messages.success(request, "Your account has been created. Welcome to Huduma Requests.")
+        messages.success(
+            request, "Your account has been created. Welcome to Huduma Requests."
+        )
         return redirect("dashboard")
     return render(request, "accounts/register.html", {"form": form})
 
 
+@citizen_required
 def profile(request):
     """Allow a citizen to update their contact details."""
     form = ProfileForm(request.POST or None, instance=request.user)

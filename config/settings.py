@@ -85,3 +85,8 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "Huduma Requests <no-reply@example.com>"
 
 TIME_ZONE = "Africa/Nairobi"
+import sys
+
+if "test" in sys.argv:
+    # Fast password hashing so the test suite runs in seconds, not minutes.
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]

@@ -15,11 +15,12 @@ from services.permissions import staff_required
 
 @staff_required
 def dashboard(request):
-    """Show service-wide counts, charts, and the newest pending requests."""
+    """Show service-wide counts, charts, and the oldest pending requests."""
+    # Oldest first: these have been waiting the longest and need attention first.
     pending_requests = (
         ServiceRequest.objects.filter(status=Status.PENDING)
         .select_related("category", "county", "user")
-        .order_by("-created_at")[:10]
+        .order_by("created_at")[:10]
     )
     return render(
         request,
@@ -31,24 +32,24 @@ def dashboard(request):
 @staff_required
 def request_list(request):
     """List requests with staff filters, search, and pagination."""
-    requests = ServiceRequest.objects.select_related("category", "county", "user")
+    queryset = ServiceRequest.objects.select_related("category", "county", "user")
     selected_status = request.GET.get("status", "")
     category_id = request.GET.get("category", "")
     county_id = request.GET.get("county", "")
     query = request.GET.get("q", "").strip()
     if selected_status in Status.values:
-        requests = requests.filter(status=selected_status)
+        queryset = queryset.filter(status=selected_status)
     if category_id.isdigit():
-        requests = requests.filter(category_id=category_id)
+        queryset = queryset.filter(category_id=category_id)
     if county_id.isdigit():
-        requests = requests.filter(county_id=county_id)
+        queryset = queryset.filter(county_id=county_id)
     if query:
-        requests = requests.filter(
+        queryset = queryset.filter(
             Q(reference__icontains=query) | Q(user__full_name__icontains=query)
         )
     query_params = request.GET.copy()
     query_params.pop("page", None)
-    page_obj = Paginator(requests, 10).get_page(request.GET.get("page"))
+    page_obj = Paginator(queryset, 10).get_page(request.GET.get("page"))
     return render(
         request,
         "adminpanel/request_list.html",

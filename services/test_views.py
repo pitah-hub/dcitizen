@@ -56,10 +56,10 @@ class ServiceViewTests(TestCase):
         self.assertRedirects(response, f"{reverse('login')}?next={reverse('request_create')}")
 
     def test_citizen_cannot_open_another_citizens_request(self):
-        """Foreign request IDs return 403 as required by the citizen flow."""
+        """Foreign request IDs return 404 so the id is not revealed."""
         request = self.create_request(user=self.other)
         self.client.force_login(self.citizen)
-        self.assertEqual(self.client.get(reverse("request_detail", args=[request.pk])).status_code, 403)
+        self.assertEqual(self.client.get(reverse("request_detail", args=[request.pk])).status_code, 404)
 
     def test_citizen_cannot_access_staff_panel(self):
         """The staff panel returns 403 to authenticated citizens."""
