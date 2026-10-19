@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, UserCreationForm
 
 from .models import User
 
@@ -47,3 +47,11 @@ class ProfileForm(BootstrapFormMixin, forms.ModelForm):
         if taken.exists():
             raise forms.ValidationError("An account with this email already exists.")
         return email
+
+
+class BootstrapPasswordResetForm(BootstrapFormMixin, PasswordResetForm):
+    """Step 1 of a password reset: ask for the account email."""
+
+
+class BootstrapSetPasswordForm(BootstrapFormMixin, SetPasswordForm):
+    """Step 2: choose a new password after following the emailed link."""

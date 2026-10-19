@@ -62,6 +62,11 @@ class User(AbstractUser):
         "national ID", max_length=8, unique=True, validators=[national_id_validator]
     )
     phone = models.CharField(max_length=15, validators=[phone_validator])
+    posting_suspended = models.BooleanField(
+        default=False,
+        help_text="The citizen can sign in and read, but cannot report, message or rate.",
+    )
+    suspension_reason = models.CharField(max_length=200, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["full_name", "national_id", "phone"]

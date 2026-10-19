@@ -1,4 +1,35 @@
-{# Location and messages for the admin request detail page. Needs: service_request, comments, comment_form, can_comment. #}
+{# Location, messages and citizen moderation for the admin request detail page. Needs: service_request, comments, comment_form, can_comment. #}
 {% include "partials/_location_map.html" %}
 {% url 'panel:request_comment' service_request.pk as comment_url %}
 {% include "partials/_comments.html" with post_url=comment_url %}
+
+<section class="card p-4 mt-4 no-tilt no-print">
+  <h2 class="h5 mb-2">Citizen account</h2>
+  <p class="mb-2">
+    {{ service_request.user.full_name }} <span class="text-secondary small">({{ service_request.user.email }})</span>
+    {% if service_request.user.posting_suspended %}<span class="badge text-bg-danger ms-2">Posting suspended</span>{% endif %}
+  </p>
+  {% if service_request.user.posting_suspended %}
+    {% if service_request.user.suspension_reason %}<p class="small text-secondary">Reason: {{ service_request.user.suspension_reason }}</p>{% endif %}
+    <form method="post" action="{% url 'panel:citizen_posting' service_request.user.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="reinstate">
+      <input type="hidden" name="request" value="{{ service_request.pk }}">
+      <button class="btn btn-outline-primary btn-sm" type="submit">Reinstate posting</button>
+    </form>
+  {% else %}
+    <form method="post" action="{% url 'panel:citizen_posting' service_request.user.pk %}" class="row g-2 align-items-end">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="suspend">
+      <input type="hidden" name="request" value="{{ service_request.pk }}">
+      <div class="col-sm-8">
+        <label class="form-label small mb-1" for="suspend-reason">Reason (shown to the citizen)</label>
+        <input class="form-control" id="suspend-reason" name="reason" maxlength="200" placeholder="e.g. Repeated false reports">
+      </div>
+      <div class="col-sm-4">
+        <button class="btn btn-outline-danger btn-sm w-100" type="submit" onclick="return confirm('Suspend this citizen from posting?');">Suspend posting</button>
+      </div>
+    </form>
+    <p class="small text-secondary mt-2 mb-0">A suspended citizen can still sign in and read, but cannot report, message or rate.</p>
+  {% endif %}
+</section>

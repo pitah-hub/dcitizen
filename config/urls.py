@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("accounts.urls")),
     path("", include("services.urls")),
     path("admin-panel/", include("adminpanel.urls")),
+    path("", include("accounts.reset_urls")),
 ]
 
 if settings.DEBUG:

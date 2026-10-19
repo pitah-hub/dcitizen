@@ -41,6 +41,9 @@
     </div>
   </nav>
   <main class="container py-4">
+    {% if user.is_authenticated and user.posting_suspended %}
+      <div class="alert alert-warning no-print"><strong>Posting is suspended on your account.</strong> You can still view your requests, but you cannot report issues, post messages or leave feedback.{% if user.suspension_reason %} Reason: {{ user.suspension_reason }}{% endif %} Contact the service desk if you think this is a mistake.</div>
+    {% endif %}
     {% include "partials/_messages.html" %}
     {% block content %}{% endblock %}
   </main>

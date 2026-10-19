@@ -23,8 +23,11 @@
   var hasPin = !isNaN(lat) && !isNaN(lng);
 
   var map = L.map(el).setView(hasPin ? [lat, lng] : KENYA_CENTRE, hasPin ? 15 : 6);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  // OpenStreetMap's servers refuse tile requests that carry no Referer ("Access blocked").
+  // Django's default Referrer-Policy hides it on cross-origin requests, so ask for it here.
+  var tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
+    referrerPolicy: "strict-origin-when-cross-origin",
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
@@ -41,6 +44,20 @@
   var clearBtn = document.getElementById("clear-pin-btn");
   var marker = null;
   var HINT = "Click the map to drop a pin. You can drag it to adjust.";
+  var tileWarned = false;
+
+  tiles.on("tileerror", function () {
+    if (tileWarned) return;
+    tileWarned = true;
+    status.textContent = "The map pictures could not load. You can still click to place a pin, or continue without one.";
+  });
+
+  function locateError(err) {
+    if (!window.isSecureContext) return "Location only works on a secure (HTTPS) page. Click the map instead.";
+    if (err && err.code === 1) return "Location access is blocked. Allow it in the address bar, or click the map instead.";
+    if (err && err.code === 3) return "Finding your location took too long. Click the map instead.";
+    return "Your device could not work out its location. Click the map instead.";
+  }
 
   function setPin(latlng) {
     if (marker) {
@@ -73,7 +90,7 @@
           setPin(here);
           map.setView(here, 16);
         },
-        function () { status.textContent = "Could not get your location. Click the map instead."; },
+        function (err) { status.textContent = locateError(err); },
         { enableHighAccuracy: true, timeout: 10000 }
       );
     });

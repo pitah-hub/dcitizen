@@ -1,5 +1,6 @@
 from functools import wraps
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
@@ -40,3 +41,19 @@ def get_owned_request(user, pk):
     404 rather than 403 on purpose: it does not reveal that the id exists.
     """
     return get_object_or_404(ServiceRequest.objects.for_user(user), pk=pk)
+
+
+def posting_allowed(view):
+    """
+    Stop suspended citizens from creating anything (reports, messages, feedback).
+    Reading stays allowed. Use it below @citizen_required.
+    """
+
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if request.user.posting_suspended:
+            messages.error(request, "You cannot do that while your posting is suspended.")
+            return redirect("dashboard")
+        return view(request, *args, **kwargs)
+
+    return wrapper

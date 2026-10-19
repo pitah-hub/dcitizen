@@ -90,3 +90,20 @@ import sys
 if "test" in sys.argv:
     # Fast password hashing so the test suite runs in seconds, not minutes.
     PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+# --- Hosting / production ---
+# Local development is unchanged. On the server the WSGI file sets DJANGO_PRODUCTION=1.
+import os
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+PASSWORD_RESET_TIMEOUT = 3600  # reset links expire after one hour
+# OpenStreetMap refuses map tiles when no Referer is sent; Django's default hides it.
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+if os.environ.get("DJANGO_PRODUCTION") == "1":
+    DEBUG = False
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+    ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if h.strip()]
+    CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

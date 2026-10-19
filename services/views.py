@@ -11,7 +11,7 @@ from .analytics import citizen_stats
 from .forms import CommentForm, FeedbackForm, ReportForm
 from .models import Comment, Feedback, ServiceRequest, Status
 from .notifications import send_submission_email
-from .permissions import citizen_required, get_owned_request
+from .permissions import citizen_required, get_owned_request, posting_allowed
 
 
 @citizen_required
@@ -29,6 +29,7 @@ def dashboard(request):
 
 
 @citizen_required
+@posting_allowed
 def request_create(request):
     """Create a new public-service request for the signed-in citizen."""
     form = ReportForm(request.POST or None, request.FILES or None)
@@ -92,6 +93,7 @@ def request_detail(request, pk):
 
 
 @citizen_required
+@posting_allowed
 @require_POST
 def request_feedback(request, pk):
     """Save the citizen's single rating for their own resolved request."""
@@ -118,6 +120,7 @@ def request_feedback(request, pk):
 
 
 @citizen_required
+@posting_allowed
 @require_POST
 def request_comment(request, pk):
     """Post a message on the citizen's own request while it is still open."""

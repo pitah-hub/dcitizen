@@ -1,5 +1,6 @@
 """Staff-facing request management views."""
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -12,6 +13,8 @@ from services.forms import CommentForm, StatusChangeForm
 from services.models import Category, Comment, County, ServiceRequest, Status
 from services.notifications import send_comment_email, send_status_email
 from services.permissions import staff_required
+
+User = get_user_model()
 
 
 @staff_required
@@ -128,3 +131,32 @@ def request_comment(request, pk):
     else:
         messages.error(request, "Write a message of up to 1000 characters.")
     return redirect("panel:request_detail", pk=pk)
+
+
+def _back_to_request(request):
+    """Return to the request page the officer came from, else the dashboard."""
+    request_pk = request.POST.get("request", "")
+    if request_pk.isdigit():
+        return redirect("panel:request_detail", pk=int(request_pk))
+    return redirect("panel:dashboard")
+
+
+@staff_required
+@require_POST
+def citizen_posting(request, pk):
+    """Suspend or reinstate a citizen's right to report, message and rate."""
+    citizen = get_object_or_404(User, pk=pk, is_staff=False)
+    action = request.POST.get("action")
+    if action == "suspend":
+        citizen.posting_suspended = True
+        citizen.suspension_reason = request.POST.get("reason", "").strip()[:200]
+        messages.success(request, f"{citizen.full_name} can no longer post.")
+    elif action == "reinstate":
+        citizen.posting_suspended = False
+        citizen.suspension_reason = ""
+        messages.success(request, f"{citizen.full_name} can post again.")
+    else:
+        messages.error(request, "Unknown action.")
+        return _back_to_request(request)
+    citizen.save(update_fields=["posting_suspended", "suspension_reason"])
+    return _back_to_request(request)
