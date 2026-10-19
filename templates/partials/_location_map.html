@@ -1,0 +1,12 @@
+{# Read-only map for a request that has a pin. Needs: service_request. Prints nothing when there is no pin. #}
+{% load static %}
+{% if service_request.latitude is not None and service_request.longitude is not None %}
+<section class="card p-4 mt-4 no-tilt no-print">
+  <h2 class="h5 mb-3">Location</h2>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <div id="location-map" class="location-map" data-mode="view" data-lat="{{ service_request.latitude|stringformat:'f' }}" data-lng="{{ service_request.longitude|stringformat:'f' }}"></div>
+  <p class="small mt-2 mb-0"><a href="https://www.openstreetmap.org/?mlat={{ service_request.latitude|stringformat:'f' }}&amp;mlon={{ service_request.longitude|stringformat:'f' }}#map=17/{{ service_request.latitude|stringformat:'f' }}/{{ service_request.longitude|stringformat:'f' }}" target="_blank" rel="noopener">Open in OpenStreetMap</a></p>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/location_map.js' %}" defer></script>
+{% endif %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Receipt {{ service_request.reference }} | Huduma Requests{% endblock %}
+{% block content %}
+<div class="mx-auto" style="max-width: 720px;">
+  <div class="d-flex justify-content-between align-items-center mb-3 no-print">
+    <a href="{% url 'request_detail' service_request.pk %}">&larr; Back to request</a>
+    <button type="button" class="btn btn-primary btn-sm" onclick="window.print()"><i class="bi bi-printer"></i> Print / Save as PDF</button>
+  </div>
+
+  <article class="card receipt p-4 p-md-5 no-tilt">
+    <header class="text-center mb-4">
+      <h1 class="h3 fw-bold mb-1">HUDUMA REQUESTS</h1>
+      <p class="text-secondary mb-0">Public service request receipt</p>
+    </header>
+
+    <dl class="row mb-0">
+      <dt class="col-sm-4">Reference</dt>
+      <dd class="col-sm-8"><strong class="font-monospace fs-5">{{ service_request.reference }}</strong></dd>
+
+      <dt class="col-sm-4">Status</dt>
+      <dd class="col-sm-8">{{ service_request.get_status_display }}</dd>
+
+      <dt class="col-sm-4">Submitted by</dt>
+      <dd class="col-sm-8">{{ service_request.user.full_name }}</dd>
+
+      <dt class="col-sm-4">Submitted on</dt>
+      <dd class="col-sm-8">{{ service_request.created_at|date:"d M Y, H:i" }}</dd>
+
+      <dt class="col-sm-4">Category</dt>
+      <dd class="col-sm-8">{{ service_request.category }}</dd>
+
+      <dt class="col-sm-4">County</dt>
+      <dd class="col-sm-8">{{ service_request.county }}</dd>
+
+      <dt class="col-sm-4">Area / landmark</dt>
+      <dd class="col-sm-8">{{ service_request.area }}</dd>
+
+      <dt class="col-sm-4">Description</dt>
+      <dd class="col-sm-8">{{ service_request.description|linebreaksbr }}</dd>
+    </dl>
+
+    <footer class="mt-4 pt-3 border-top small text-secondary">
+      <p class="mb-1">Track this request at: <span class="font-monospace">{{ track_url }}</span></p>
+      <p class="mb-0">Printed on {% now "d M Y, H:i" %}. This receipt was generated automatically.</p>
+    </footer>
+  </article>
+</div>
+{% endblock %}

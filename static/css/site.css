@@ -62,3 +62,67 @@ body { background: var(--portal-bg); color: #24322c; }
 }
 
 @media (max-width: 575.98px) { .container { padding-left: 1rem; padding-right: 1rem; } }
+
+/* Star rating input: radios run 5 to 1 and are shown in reverse (row-reverse),
+   so hovering or selecting a star lights it and every lower one. */
+.star-rating { position: relative; display: inline-flex; flex-direction: row-reverse; gap: .15rem; }
+.star-rating input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+
+.star-rating label {
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color .15s ease, transform .15s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label { color: #f5b301; }
+
+.star-rating label:hover { transform: scale(1.15); }
+
+.star-rating input:focus-visible + label {
+  outline: 3px solid rgb(11 93 59 / 45%);
+  outline-offset: 3px;
+  border-radius: .35rem;
+}
+
+/* Read-only stars */
+.stars { letter-spacing: .1rem; white-space: nowrap; }
+.stars .on { color: #f5b301; }
+.stars .off { color: #cbd5e1; }
+
+/* Map */
+.location-map {
+  height: 320px;
+  border: 1px solid #dbe4df;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Keep Leaflet's panes and controls below the sticky navbar. */
+.leaflet-container { z-index: 0; font: inherit; }
+
+@media (max-width: 575.98px) { .location-map { height: 260px; } }
+
+/* Messages */
+.comment { padding-left: 1rem; border-left: 3px solid #cbd5e1; }
+.comment-staff { border-left-color: var(--portal-green-light); }
+.comment-body { white-space: pre-line; overflow-wrap: anywhere; }
+
+/* Printing: show only the page content, flat and black on white. */
+@media print {
+  .navbar, body > footer, .no-print, .alert { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+  body::before, body::after { display: none !important; }
+  main.container { max-width: 100%; padding: 0; }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #999 !important;
+    background: #fff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .reveal { opacity: 1 !important; translate: none !important; }
+}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, County, ServiceRequest, StatusUpdate
+from .models import Category, Comment, County, Feedback, ServiceRequest, StatusUpdate
 
 
 @admin.register(Category)
@@ -31,3 +31,15 @@ class ServiceRequestAdmin(admin.ModelAdmin):
     # status is read-only here on purpose: it must change through change_status().
     readonly_fields = ("reference", "status", "created_at", "updated_at")
     inlines = [StatusUpdateInline]
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("request", "author", "created_at")
+    readonly_fields = ("created_at",)
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ("request", "rating", "created_at")
+    readonly_fields = ("created_at",)

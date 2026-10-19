@@ -1,0 +1,17 @@
+{# Map pin picker for the report form. Include INSIDE the <form>, above the submit button. Needs: form (a ReportForm). #}
+{% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<div class="mb-3">
+  <label class="form-label">Pin the location on the map <span class="text-secondary fw-normal">(optional)</span></label>
+  <div id="location-map" class="location-map" data-mode="pick" data-lat="{{ form.latitude.value|default_if_none:'' }}" data-lng="{{ form.longitude.value|default_if_none:'' }}"></div>
+  <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+    <button type="button" class="btn btn-outline-primary btn-sm" id="locate-btn"><i class="bi bi-geo-alt"></i> Use my location</button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" id="clear-pin-btn">Clear pin</button>
+    <small class="text-secondary" id="location-status">Click the map to drop a pin. You can drag it to adjust.</small>
+  </div>
+  {{ form.latitude }}{{ form.longitude }}
+  {% for error in form.latitude.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+  {% for error in form.longitude.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/location_map.js' %}" defer></script>

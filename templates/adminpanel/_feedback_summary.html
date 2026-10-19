@@ -1,0 +1,55 @@
+{# Satisfaction summary for the admin dashboard. Needs: feedback (from feedback_stats()). #}
+<section class="card p-4 mt-4">
+  <h2 class="h4 mb-3">Citizen satisfaction</h2>
+  {% if feedback.count %}
+    <div class="row g-3 mb-4">
+      <div class="col-sm-4"><div class="border rounded-3 p-3 h-100">
+        <span class="small text-secondary d-block">Average rating</span>
+        <strong class="display-6">{{ feedback.average }}</strong> <span class="text-secondary">/ 5</span><br>
+        {% include "partials/_stars.html" with rating=feedback.average_stars %}
+      </div></div>
+      <div class="col-sm-4"><div class="border rounded-3 p-3 h-100">
+        <span class="small text-secondary d-block">Feedback received</span>
+        <strong class="display-6">{{ feedback.count }}</strong>
+      </div></div>
+      <div class="col-sm-4"><div class="border rounded-3 p-3 h-100">
+        <span class="small text-secondary d-block">Low ratings (1 or 2 stars)</span>
+        <strong class="display-6 {% if feedback.low_count %}text-danger{% endif %}">{{ feedback.low_count }}</strong>
+      </div></div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <h3 class="h6 text-uppercase text-secondary">Average by category</h3>
+        <ul class="list-group list-group-flush">
+          {% for row in feedback.by_category %}
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <span>{{ row.name }} <small class="text-secondary">({{ row.total }})</small></span>
+              <strong>{{ row.avg|floatformat:1 }}</strong>
+            </li>
+          {% endfor %}
+        </ul>
+        <p class="small text-secondary mt-2 mb-0">Lowest first, so weak spots show at the top.</p>
+      </div>
+      <div class="col-lg-7">
+        <h3 class="h6 text-uppercase text-secondary">Latest comments</h3>
+        {% if feedback.latest_comments %}
+          <ul class="list-unstyled mb-0">
+            {% for item in feedback.latest_comments %}
+              <li class="mb-3">
+                {% include "partials/_stars.html" with rating=item.rating %}
+                <a class="ms-2" href="{% url 'panel:request_detail' item.request.pk %}">{{ item.request.reference }}</a>
+                <small class="text-secondary">{{ item.request.category }} &middot; {{ item.created_at|date:"d M Y" }}</small>
+                <p class="mb-0">{{ item.comment }}</p>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-secondary mb-0">No written comments yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <p class="text-secondary mb-0">No feedback yet. Citizens can rate a request once it is resolved.</p>
+  {% endif %}
+</section>

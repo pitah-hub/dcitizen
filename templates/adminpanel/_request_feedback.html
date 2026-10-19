@@ -1,0 +1,11 @@
+{# Shows the citizen's rating on the admin request detail page. Needs: service_request. #}
+{% if service_request.feedback %}
+  <section class="card p-4 mt-4">
+    <h2 class="h5 mb-2">Citizen feedback</h2>
+    {% include "partials/_stars.html" with rating=service_request.feedback.rating %}
+    {% if service_request.feedback.comment %}<p class="mb-0 mt-2">{{ service_request.feedback.comment }}</p>{% else %}<p class="text-secondary mb-0 mt-2">No comment left.</p>{% endif %}
+    <p class="small text-secondary mb-0 mt-2">Submitted {{ service_request.feedback.created_at|date:"d M Y, H:i" }}.</p>
+  </section>
+{% elif service_request.status == "RESOLVED" %}
+  <section class="card p-4 mt-4"><p class="text-secondary mb-0">The citizen has not left feedback yet.</p></section>
+{% endif %}

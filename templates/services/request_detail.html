@@ -1,3 +1,37 @@
 {% extends "base.html" %}
 {% block title %}{{ service_request.reference }} | Huduma Requests{% endblock %}
-{% block content %}<div class="d-flex justify-content-between align-items-start mb-4"><div><a class="text-decoration-none" href="{% url 'request_list' %}"><i class="bi bi-arrow-left"></i> My requests</a><h1 class="h2 mt-2 mb-1">{{ service_request.reference }}</h1><p class="text-secondary mb-0">Reported {{ service_request.created_at|date:"d M Y, H:i" }}</p></div>{% include "partials/_status_badge.html" with status=service_request.status %}</div><div class="row g-4"><div class="col-lg-7"><article class="card p-4"><h2 class="h4">Request details</h2><dl class="row mb-0"><dt class="col-sm-4">Category</dt><dd class="col-sm-8">{{ service_request.category }}</dd><dt class="col-sm-4">County</dt><dd class="col-sm-8">{{ service_request.county }}</dd><dt class="col-sm-4">Area / landmark</dt><dd class="col-sm-8">{{ service_request.area }}</dd><dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ service_request.description|linebreaksbr }}</dd></dl>{% if service_request.image %}<hr><img class="img-fluid rounded" src="{{ service_request.image.url }}" alt="Image supplied with request {{ service_request.reference }}">{% endif %}</article></div><div class="col-lg-5"><aside class="card p-4"><h2 class="h4">Status timeline</h2>{% include "partials/_timeline.html" with history=history show_notes=True show_actor=False %}</aside></div></div>{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <a class="text-decoration-none" href="{% url 'request_list' %}"><i class="bi bi-arrow-left"></i> My requests</a>
+    <h1 class="h2 mt-2 mb-1">{{ service_request.reference }}</h1>
+    <p class="text-secondary mb-0">Reported {{ service_request.created_at|date:"d M Y, H:i" }}</p>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    {% include "partials/_status_badge.html" with status=service_request.status %}
+    <a class="btn btn-outline-primary btn-sm" href="{% url 'request_receipt' service_request.pk %}"><i class="bi bi-printer"></i> Print receipt</a>
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <article class="card p-4">
+      <h2 class="h4">Request details</h2>
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Category</dt><dd class="col-sm-8">{{ service_request.category }}</dd>
+        <dt class="col-sm-4">County</dt><dd class="col-sm-8">{{ service_request.county }}</dd>
+        <dt class="col-sm-4">Area / landmark</dt><dd class="col-sm-8">{{ service_request.area }}</dd>
+        <dt class="col-sm-4">Description</dt><dd class="col-sm-8">{{ service_request.description|linebreaksbr }}</dd>
+      </dl>
+      {% if service_request.image %}<hr><img class="img-fluid rounded" src="{{ service_request.image.url }}" alt="Image supplied with request {{ service_request.reference }}">{% endif %}
+    </article>
+  </div>
+  <div class="col-lg-5">
+    <aside class="card p-4">
+      <h2 class="h4">Status timeline</h2>
+      {% include "partials/_timeline.html" with history=history show_notes=True show_actor=False %}
+    </aside>
+  </div>
+</div>
+{% include "partials/_citizen_extras.html" %}
+{% include "partials/_feedback.html" %}
+{% endblock %}

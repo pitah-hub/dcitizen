@@ -43,3 +43,16 @@ def send_status_email(service_request, update):
     if update.note:
         lines.append(f"\nNote from the officer:\n{update.note}")
     _send(user, f"Update on {service_request.reference}: {update.get_new_status_display()}", "\n".join(lines))
+
+
+def send_comment_email(comment):
+    """Tell the citizen about a message from an officer. Call after a staff comment is saved."""
+    service_request = comment.request
+    user = service_request.user
+    body = (
+        f"Hello {user.get_short_name()},\n\n"
+        f"An officer left a message on your request {service_request.reference}:\n\n"
+        f"{comment.body}\n\n"
+        f"Sign in to reply."
+    )
+    _send(user, f"New message on {service_request.reference}", body)

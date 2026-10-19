@@ -1,0 +1,25 @@
+{# Feedback box for the citizen request detail page. Needs: service_request, can_give_feedback, feedback_form. #}
+{% if service_request.feedback %}
+  <section class="card p-4 mt-4">
+    <h2 class="h5 mb-2">Your feedback</h2>
+    {% include "partials/_stars.html" with rating=service_request.feedback.rating %}
+    {% if service_request.feedback.comment %}<p class="mb-0 mt-2">{{ service_request.feedback.comment }}</p>{% endif %}
+    <p class="small text-secondary mb-0 mt-2">Thank you. Submitted {{ service_request.feedback.created_at|date:"d M Y" }}.</p>
+  </section>
+{% elif can_give_feedback %}
+  <section class="card p-4 mt-4">
+    <h2 class="h5">How did we do?</h2>
+    <p class="text-secondary">Your request was resolved. Rate how it was handled. You can only do this once.</p>
+    <form method="post" action="{% url 'request_feedback' service_request.pk %}">
+      {% csrf_token %}
+      <div class="star-rating mb-3" role="radiogroup" aria-label="Rating from 1 to 5 stars">
+        {% for radio in feedback_form.rating %}{{ radio.tag }}<label for="{{ radio.id_for_label }}" title="{{ radio.choice_label }} star{{ radio.choice_label|pluralize }}">&#9733;</label>{% endfor %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="{{ feedback_form.comment.id_for_label }}">{{ feedback_form.comment.label }}</label>
+        {{ feedback_form.comment }}
+      </div>
+      <button class="btn btn-primary" type="submit">Send feedback</button>
+    </form>
+  </section>
+{% endif %}

@@ -1,0 +1,25 @@
+{# Message thread for one request. Needs: comments, comment_form, can_comment, post_url. #}
+<section class="card p-4 mt-4 no-tilt no-print">
+  <h2 class="h5 mb-3">Messages</h2>
+  {% for comment in comments %}
+    <div class="comment{% if comment.author.is_staff %} comment-staff{% endif %} mb-3">
+      <div class="d-flex justify-content-between flex-wrap gap-1">
+        <strong>{% if comment.author.is_staff and not user.is_staff %}Huduma officer{% elif comment.author_id == user.pk %}You{% else %}{{ comment.author.full_name|default:"Former user" }}{% endif %}{% if comment.author.is_staff and user.is_staff %} <span class="badge text-bg-success">Officer</span>{% endif %}</strong>
+        <span class="small text-secondary">{{ comment.created_at|date:"d M Y, H:i" }}</span>
+      </div>
+      <p class="comment-body mb-0 mt-1">{{ comment.body }}</p>
+    </div>
+  {% empty %}
+    <p class="text-secondary">No messages yet.</p>
+  {% endfor %}
+  {% if can_comment %}
+    <form method="post" action="{{ post_url }}" class="mt-3">
+      {% csrf_token %}
+      <label class="form-label" for="{{ comment_form.body.id_for_label }}">{{ comment_form.body.label }}</label>
+      {{ comment_form.body }}
+      <button class="btn btn-primary btn-sm mt-2" type="submit">Post message</button>
+    </form>
+  {% else %}
+    <p class="small text-secondary mb-0">This request is resolved, so the conversation is closed.</p>
+  {% endif %}
+</section>

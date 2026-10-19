@@ -5,11 +5,12 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.http import urlencode
+from django.views.decorators.http import require_POST
 
-from services.analytics import dashboard_stats
-from services.forms import StatusChangeForm
-from services.models import Category, County, ServiceRequest, Status
-from services.notifications import send_status_email
+from services.analytics import dashboard_stats, feedback_stats
+from services.forms import CommentForm, StatusChangeForm
+from services.models import Category, Comment, County, ServiceRequest, Status
+from services.notifications import send_comment_email, send_status_email
 from services.permissions import staff_required
 
 
@@ -25,7 +26,11 @@ def dashboard(request):
     return render(
         request,
         "adminpanel/dashboard.html",
-        {"stats": dashboard_stats(), "pending_requests": pending_requests},
+        {
+            "stats": dashboard_stats(),
+            "feedback": feedback_stats(),
+            "pending_requests": pending_requests,
+        },
     )
 
 
@@ -71,7 +76,10 @@ def request_list(request):
 def request_detail(request, pk):
     """Display and safely advance one request through the status workflow."""
     service_request = get_object_or_404(
-        ServiceRequest.objects.select_related("category", "county", "user"), pk=pk
+        ServiceRequest.objects.select_related(
+            "category", "county", "user", "feedback"
+        ),
+        pk=pk,
     )
     form = StatusChangeForm(request.POST or None, service_request=service_request)
     if request.method == "POST" and form.is_valid():
@@ -91,5 +99,32 @@ def request_detail(request, pk):
     return render(
         request,
         "adminpanel/request_detail.html",
-        {"service_request": service_request, "history": history, "form": form},
+        {
+            "service_request": service_request,
+            "history": history,
+            "form": form,
+            "comments": service_request.comments.select_related("author"),
+            "comment_form": CommentForm(),
+            "can_comment": service_request.is_open,
+        },
     )
+
+
+@staff_required
+@require_POST
+def request_comment(request, pk):
+    """Post an officer's message on any open request and email the citizen."""
+    service_request = get_object_or_404(ServiceRequest, pk=pk)
+    if not service_request.is_open:
+        messages.error(request, "This request is resolved, so the conversation is closed.")
+        return redirect("panel:request_detail", pk=pk)
+    form = CommentForm(
+        request.POST, instance=Comment(request=service_request, author=request.user)
+    )
+    if form.is_valid():
+        comment = form.save()
+        send_comment_email(comment)
+        messages.success(request, "Message posted and citizen notified.")
+    else:
+        messages.error(request, "Write a message of up to 1000 characters.")
+    return redirect("panel:request_detail", pk=pk)

@@ -1,0 +1,4 @@
+{# Location and messages for the citizen request detail page. Needs: service_request, comments, comment_form, can_comment. #}
+{% include "partials/_location_map.html" %}
+{% url 'request_comment' service_request.pk as comment_url %}
+{% include "partials/_comments.html" with post_url=comment_url %}

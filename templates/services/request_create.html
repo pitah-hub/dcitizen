@@ -1,3 +1,21 @@
 {% extends "base.html" %}
 {% block title %}Report an Issue | Huduma Requests{% endblock %}
-{% block content %}<div class="col-lg-7 mx-auto card p-4 p-md-5"><h1 class="h2">Report an issue</h1><p class="text-secondary">Give as much detail as possible so the service team can respond.</p><form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}{% include "partials/_form_field.html" with field=field %}{% endfor %}<div class="d-flex gap-2"><button class="btn btn-success">Submit request</button><a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a></div></form></div>{% endblock %}
+{% block content %}
+<div class="col-lg-7 mx-auto card p-4 p-md-5">
+  <h1 class="h2">Report an issue</h1>
+  <p class="text-secondary">Give as much detail as possible so the service team can respond.</p>
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    {# visible_fields skips the hidden latitude/longitude inputs, which the map picker renders itself. #}
+    {% for field in form.visible_fields %}
+      {% include "partials/_form_field.html" with field=field %}
+    {% endfor %}
+    {% include "partials/_location_picker.html" %}
+    <div class="d-flex gap-2">
+      <button class="btn btn-success" type="submit">Submit request</button>
+      <a class="btn btn-outline-secondary" href="{% url 'dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

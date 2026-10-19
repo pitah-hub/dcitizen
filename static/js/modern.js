@@ -121,11 +121,16 @@
   /* ---- 5. Submit button spinner, blocks accidental double submits ---- */
   function initSubmitState() {
     document.querySelectorAll("form").forEach(function (form) {
-      form.addEventListener("submit", function () {
-        var btn = form.querySelector('[type="submit"]:not([data-no-loading])');
+      form.addEventListener("submit", function (event) {
+        // A <button> with no type attribute is a submit button too.
+        var btn = form.querySelector(
+          'button:not([type]):not([data-no-loading]), button[type="submit"]:not([data-no-loading]), input[type="submit"]:not([data-no-loading])'
+        );
         if (!btn || btn.disabled) return;
-        // Deferred so the browser still sends the form before the button is disabled.
+        // Deferred so the browser still sends the form before the button is disabled,
+        // and so a form that another handler cancelled is not left locked.
         setTimeout(function () {
+          if (event.defaultPrevented) return;
           btn.disabled = true;
           btn.classList.add("is-loading");
         }, 0);
