@@ -154,9 +154,9 @@ python manage.py seed_demo --password "a-private-password"
 - **No audit log** records who suspended a citizen, or when.
 - **Map needs the internet.** Map tiles come from OpenStreetMap, and the location button needs HTTPS (or localhost) and a device that can work out its position.
 - **Storage.** SQLite has limited write concurrency, and uploaded images are stored on the server's disk.
-## How this was built
+- ## How this was built.**  
+ AI coding assistance was used during development. I tested and deployed the project.”
 
-AI coding assistance was used during development. I tested and deployed the project.”
 
 ## Possible next steps
 
