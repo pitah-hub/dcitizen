@@ -2,7 +2,7 @@
 
 A mini eCitizen-style portal. Citizens report public service problems (a broken streetlight, a water issue, uncollected garbage), then track each request until it is resolved. County officers manage requests from an admin panel.
 
-**Live demo:** https://USERNAME.pythonanywhere.com (the officer login for the live site is sent with the submission, not published here)
+**Live demo:** https://fitaa.pythonanywhere.com (the officer login for the live site is sent with the submission, not published here)
 
 ## Features
 
